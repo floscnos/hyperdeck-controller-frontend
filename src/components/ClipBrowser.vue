@@ -8,7 +8,8 @@ import {useHyperdeckStore} from "@/stores/hyperdeck.store";
 const hyperdeckStore = useHyperdeckStore();
 
 const data = reactive({
-  clips: []
+  clips: [],
+  diskinfo: null
 })
 const reloadClips = () => {
   data.clips = []
@@ -25,6 +26,19 @@ const reloadClips = () => {
       }
     })
   })
+
+  getDiskInfo();
+}
+
+const getDiskInfo = () => {
+  api.get('/diskinfo').then(response => {
+    data.diskinfo = response.data
+  })
+}
+
+const humanFileSize = (size) => {
+  var i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
+  return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
 }
 
 onMounted(() => {
@@ -38,7 +52,7 @@ const selectClip = (Id) => {
 </script>
 
 <template>
-<div>
+<div class="mb-4">
   <div class="flex justify-between items-center mb-2">
     <h2 class="text-xl">Clip Browser</h2>
     <fa-icon icon="rotate-left" size="xl" @click="reloadClips" />
@@ -71,6 +85,7 @@ const selectClip = (Id) => {
       </tr>
     </table>
   </div>
+  <p v-if="data.diskinfo">Diskspace used: {{ humanFileSize(data.diskinfo[0].totalUsedSize) }}</p>
 
 </div>
 </template>
