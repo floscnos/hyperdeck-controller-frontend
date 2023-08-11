@@ -1,15 +1,17 @@
 <script setup>
-import WebsocketReader from "@/components/WebsocketReader.vue";
 import {onBeforeMount} from "vue";
 import {useMessagesStore} from "@/stores/messages.store";
 import MainControls from "@/components/MainControls.vue";
 import VideoPlayer from "@/components/VideoPlayer.vue";
 import ClipBrowser from "@/components/ClipBrowser.vue";
+import {useHyperdeckStore} from "@/stores/hyperdeck.store";
 
 const messagesStore = useMessagesStore();
+const hyperdeckStore = useHyperdeckStore();
 
 onBeforeMount(() => {
   messagesStore.init();
+  hyperdeckStore.init();
 })
 
 </script>
@@ -28,8 +30,6 @@ onBeforeMount(() => {
 
           <VideoPlayer />
         </div>
-
-      <WebsocketReader />
 
     </div>
   </div>

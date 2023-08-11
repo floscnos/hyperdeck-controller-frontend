@@ -3,79 +3,42 @@
 import {onMounted, reactive} from "vue";
 import {useMessagesStore} from "@/stores/messages.store";
 import MainControlButton from "@/components/MainControlButton.vue";
+import axios from "axios";
+import {api} from "@/api";
+import {playStateEnum, useHyperdeckStore} from "@/stores/hyperdeck.store";
 
-const messagesStore = useMessagesStore();
+const hyperdeckStore = useHyperdeckStore();
 
-const data = reactive({
-  status: null
-})
-
-onMounted(() => {
-  messagesStore.socket.addEventListener("message", (event) => {
-    const res = JSON.parse(event.data);
-    if (res.response === "status") {
-      data.status = res.params;
-    }
-
-  })
-})
 
 const play = () => {
-  messagesStore.socket.send(JSON.stringify({
-    command: "play",
-    params: {
-      loop: data.status.loop === 'true',
-      single: data.status['single clip'] === 'true',
-      speed: 1.0,
-    },
-  }))
+  api.get('/play')
 }
 
 const stop = () => {
-  messagesStore.socket.send(JSON.stringify({
-    command: "stop"
-  }))
+  api.get('/stop')
 }
 
 const loopClick = () => {
-  const params = {
-    loop: data.status.loop !== 'true',
-    single: data.status['single clip'] === 'true',
-  }
-  const command = data.status.status === "play" ? 'play' : 'stop'
-
-  messagesStore.socket.send(JSON.stringify({
-    command: command,
-    params: params
-  }))
+  api.get('/loop')
 }
 
 const singleClipLoop = () => {
-  const params = {
-    loop: data.status.loop === 'true',
-    single: data.status["single clip"] !== 'true',
-  }
-  const command = data.status.status === "play" ? 'play' : 'stop'
-
-  messagesStore.socket.send(JSON.stringify({
-    command: command,
-    params: params
-  }))
+  api.get('/singleClip')
 }
 </script>
 
 <template>
-  <div v-if="data.status" class="my-6">
+  <div class="my-6">
     <div class="flex my-2 gap-6">
 
       <MainControlButton
-          :active="data.status.status === 'play'"
+          :active="hyperdeckStore.playState === playStateEnum.PLAYING"
           tooltip="Play"
           icon="play"
           @click="play"
       />
       <MainControlButton
-          :active="data.status.status === 'stopped'"
+          :active="hyperdeckStore.playState === playStateEnum.STOPPED"
           tooltip="Stop"
           icon="stop"
           @click="stop"
@@ -85,14 +48,14 @@ const singleClipLoop = () => {
       </span>
 
       <MainControlButton
-          :active="data.status.loop === 'true'"
+          :active="hyperdeckStore.looped"
           tooltip="Loop"
           icon="infinity"
           @click="loopClick"
       />
 
       <MainControlButton
-          :active="data.status['single clip'] === 'true'"
+          :active="hyperdeckStore.singleClip"
           tooltip="Single Clip"
           icon="1"
           @click="singleClipLoop"
@@ -100,8 +63,8 @@ const singleClipLoop = () => {
 
     </div>
     <div class="flex gap-4 items-center">
-      <p class="text-orange-400 text-xl">{{ data.status.timecode }}</p>
-      <p>Clip id: {{ data.status["clip id"] }}</p>
+      <p class="text-orange-400 text-xl">{{ hyperdeckStore.timecode }}</p>
+      <p>Clip id: {{ hyperdeckStore.clipId }}</p>
     </div>
 
 

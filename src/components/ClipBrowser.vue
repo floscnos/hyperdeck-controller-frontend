@@ -2,50 +2,37 @@
 
 import {useMessagesStore} from "@/stores/messages.store";
 import {onMounted, reactive} from "vue";
+import {api} from "@/api";
+import {useHyperdeckStore} from "@/stores/hyperdeck.store";
 
-const messagesStore = useMessagesStore();
+const hyperdeckStore = useHyperdeckStore();
 
 const data = reactive({
   clips: []
 })
 const reloadClips = () => {
-  data.clips = [];
-  messagesStore.socket.send(JSON.stringify({
-    command: "clip_refresh"
-  }));
+  data.clips = []
+  api.get('/clips').then(response => {
+    Object.entries(response.data).forEach(([key, value]) => {
+      if (key !== 'clip count') {
+        const clipArray = value.split(' ');
+        let newClip = {
+          id: key,
+          name: clipArray[0],
+          duration: clipArray[clipArray.length - 1]
+        }
+        data.clips.push(newClip);
+      }
+    })
+  })
 }
 
 onMounted(() => {
-  messagesStore.socket.addEventListener("message", (event) => {
-    const res = JSON.parse(event.data);
-    if (res.response === "clip_info") {
-      let clip = data.clips.find(clip => clip.id == res.params.id);
-      if (clip == null) {
-        data.clips.push(res.params);
-      } else {
-        data.clips[data.clips.indexOf(clip)] = res.params;
-      }
-    } else if (data.clips.length === 0) {
-      reloadClips();
-    }
-  })
-
+  reloadClips();
 })
 
-const selectClip = async (Id) => {
-  const playing = messagesStore.lastState.status === "play";
-
-  // console.log(Id);
-
-  const command = {
-    command: "clip_select",
-    params: {
-      id: Id - 1
-    }
-  }
-  console.log(JSON.stringify(command));
-  messagesStore.socket.send(JSON.stringify(command));
-
+const selectClip = (Id) => {
+  api.get(`/setClip/${Id}`);
 }
 
 </script>
@@ -57,16 +44,19 @@ const selectClip = async (Id) => {
     <fa-icon icon="rotate-left" size="xl" @click="reloadClips" />
   </div>
 
-  <div class="border rounded p-2">
+  <div class="border rounded">
     <table v-if="data.clips" class="table-auto w-full">
       <thead>
-        <tr>
-          <th class="text-left">Id</th>
+        <tr class="border-b">
+          <th></th>
+          <th class="text-left pl-2 py-2">Id</th>
+
           <th class="text-left">Name</th>
           <th class="text-left">Duration</th>
         </tr>
       </thead>
       <tr v-for="clip in data.clips" class=" odd:bg-black">
+        <td class="pl-2"><fa-icon v-if="clip.id === hyperdeckStore.clipId" icon="play" class="text-green-600"></fa-icon></td>
         <td class="py-2">{{ clip.id }}</td>
         <td>{{ clip.name }}</td>
         <td>{{ clip.duration }}</td>
