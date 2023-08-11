@@ -63,8 +63,7 @@ const selectClip = (Id) => {
       <thead>
         <tr class="border-b">
           <th></th>
-          <th class="text-left pl-2 py-2">Id</th>
-
+          <th class="text-left py-2">Id</th>
           <th class="text-left">Name</th>
           <th class="text-left">Duration</th>
         </tr>
