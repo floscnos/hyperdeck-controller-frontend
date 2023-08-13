@@ -5,6 +5,7 @@ import {createPinia} from "pinia";
 import {iconInit} from "@/assets/icons";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
+
 const app = createApp(App);
 
 

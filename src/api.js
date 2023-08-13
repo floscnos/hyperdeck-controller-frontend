@@ -1,7 +1,8 @@
 import axios from "axios";
+import {getBaseUrl} from "@/helpers/baseurl.helper";
 
 export const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL,
+    baseURL: getBaseUrl(),
     headers: {
         Accept: "application/json",
         "Content-Type": "application/json",

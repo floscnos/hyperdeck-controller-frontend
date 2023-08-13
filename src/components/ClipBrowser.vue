@@ -1,6 +1,4 @@
 <script setup>
-
-import {useMessagesStore} from "@/stores/messages.store";
 import {onMounted, reactive} from "vue";
 import {api} from "@/api";
 import {useHyperdeckStore} from "@/stores/hyperdeck.store";
@@ -55,7 +53,7 @@ const selectClip = (Id) => {
 <div class="mb-4">
   <div class="flex justify-between items-center mb-2">
     <h2 class="text-xl">Clip Browser</h2>
-    <fa-icon icon="rotate-left" size="xl" @click="reloadClips" />
+    <fa-icon icon="rotate-left" size="xl" @click="reloadClips" class="cursor-pointer" />
   </div>
 
   <div class="border rounded">

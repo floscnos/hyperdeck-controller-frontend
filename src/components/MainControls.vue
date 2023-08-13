@@ -1,9 +1,5 @@
 <script setup>
-
-import {onMounted, reactive} from "vue";
-import {useMessagesStore} from "@/stores/messages.store";
 import MainControlButton from "@/components/MainControlButton.vue";
-import axios from "axios";
 import {api} from "@/api";
 import {playStateEnum, useHyperdeckStore} from "@/stores/hyperdeck.store";
 

@@ -1,5 +1,6 @@
 import {defineStore} from "pinia";
 import {api} from "@/api";
+import {getBaseUrl} from "@/helpers/baseurl.helper";
 
 export const playStateEnum = {
     PLAYING: 'play',
@@ -28,7 +29,8 @@ export const useHyperdeckStore = defineStore('hyperdeck', {
             api.get('/status').then(response => {
                 [this.playState, this.looped, this.singleClip, this.timecode, this.clipId ] = parseHyperdeckStatus(response.data);
             })
-            const ws = new WebSocket(import.meta.env.VITE_WEBSOCKET_URL);
+
+            const ws = new WebSocket(getBaseUrl(true))
             ws.onmessage = (event) => {
                [ this.playState, this.looped, this.singleClip, this.timecode, this.clipId ] = parseHyperdeckStatus(JSON.parse(event.data));
             }

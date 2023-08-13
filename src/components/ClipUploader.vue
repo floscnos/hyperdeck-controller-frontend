@@ -2,6 +2,7 @@
 
 import {reactive} from "vue";
 import {api} from "@/api";
+import {getBaseUrl} from "@/helpers/baseurl.helper";
 
 const data = reactive({
   clip: null,
@@ -21,7 +22,7 @@ const handleUpload = () => {
   api.post('/clips', formData, { headers }).then(response => {
     console.log("Clipsize: " + response.data.filesize)
     data.clipSize = response.data.filesize;
-    data.uploadWebsocket = new WebSocket(import.meta.env.VITE_WEBSOCKET_URL + '/job/' + response.data.job);
+    data.uploadWebsocket = new WebSocket(getBaseUrl(true) + '/job/' + response.data.job);
     data.uploadWebsocket.onmessage = (event) => {
       data.bytesTransferred = JSON.parse(event.data).info.bytes;
 
