@@ -47,6 +47,17 @@ const selectClip = (Id) => {
   api.get(`/setClip/${Id}`);
 }
 
+const deleteClip = (filename) => {
+  const confirmed = confirm(`Are you sure you want to delete ${filename}?`)
+  if (confirmed) {
+    api.delete(`/clips/${filename}`).then(response => {
+      reloadClips()
+    }).catch((err) => {
+      alert(err)
+    })
+  }
+}
+
 </script>
 
 <template>
@@ -64,6 +75,7 @@ const selectClip = (Id) => {
           <th class="text-left py-2">Id</th>
           <th class="text-left">Name</th>
           <th class="text-left">Duration</th>
+          <th></th>
         </tr>
       </thead>
       <tr v-for="clip in data.clips" class=" odd:bg-black">
@@ -72,12 +84,17 @@ const selectClip = (Id) => {
         <td>{{ clip.name }}</td>
         <td>{{ clip.duration }}</td>
         <td>
-          <button
-            class="border rounded px-1 py-px"
-            @click="selectClip(clip.id)"
-          >
-            play
-          </button>
+          <div class=" text-right">
+            <button
+              class="border rounded px-1 py-px"
+              @click="selectClip(clip.id)"
+            >
+              play
+            </button>
+            <button class="mx-2">
+              <fa-icon class="hover:text-orange-400" icon="trash-can"  size="xl" @click="deleteClip(clip.name)"/>
+            </button>
+          </div>
         </td>
       </tr>
     </table>
