@@ -8,7 +8,7 @@ export function getBaseUrl(isWebsocket = false) {
         }
     } else {
         if (isWebsocket) {
-            url = 'ws://' + window.location.host;
+            url = 'wss://' + window.location.host;
         } else {
             url = window.location.origin + '/api';
         }
